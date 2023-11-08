@@ -2,6 +2,9 @@ import UIKit
 
 class ViewController: UIViewController {
     @IBOutlet weak var button: UIButton!
+    @IBOutlet var textField: UITextField!
+    @IBOutlet var label: UILabel!
+    @IBOutlet var button2: UIButton!
     
     var isBlack: Bool = false {
         didSet {
@@ -16,14 +19,11 @@ class ViewController: UIViewController {
     @IBAction func onBut(_ sender: Any) {
         isBlack.toggle()
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-        self.bruteForce(passwordToUnlock: "1!gr")
-        
-        // Do any additional setup after loading the view.
+        buttonTapped(button2)
+
     }
     
     func bruteForce(passwordToUnlock: String) {
@@ -31,19 +31,24 @@ class ViewController: UIViewController {
 
         var password: String = ""
 
-        // Will strangely ends at 0000 instead of ~~~
-        while password != passwordToUnlock { // Increase MAXIMUM_PASSWORD_SIZE value for more
-            password = generateBruteForce(password, fromArray: ALLOWED_CHARACTERS)
-//             Your stuff here
-            print(password)
-            // Your stuff here
+        let queue = DispatchQueue.global(qos: .default)
+        queue.async { [self] in
+            while password != passwordToUnlock {
+                password = generateBruteForce(password, fromArray: ALLOWED_CHARACTERS)
+                print(password)
+                label.text = password
+            }
         }
-        
         print(password)
     }
+    
+    @IBAction func buttonTapped(_ sender: UIButton) {
+        let text: String = ""
+        textField.text = text
+        textField.isSecureTextEntry = true
+        self.bruteForce(passwordToUnlock: text)
+    }
 }
-
-
 
 extension String {
     var digits:      String { return "0123456789" }
@@ -52,8 +57,6 @@ extension String {
     var punctuation: String { return "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~" }
     var letters:     String { return lowercase + uppercase }
     var printable:   String { return digits + letters + punctuation }
-
-
 
     mutating func replace(at index: Int, with character: Character) {
         var stringArray = Array(self)
@@ -68,7 +71,7 @@ func indexOf(character: Character, _ array: [String]) -> Int {
 
 func characterAt(index: Int, _ array: [String]) -> Character {
     return index < array.count ? Character(array[index])
-                               : Character("")
+    : Character("")
 }
 
 func generateBruteForce(_ string: String, fromArray array: [String]) -> String {
