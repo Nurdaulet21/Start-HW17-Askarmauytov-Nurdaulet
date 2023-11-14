@@ -6,6 +6,7 @@ class ViewController: UIViewController {
     @IBOutlet var label: UILabel!
     @IBOutlet var button2: UIButton!
     
+    
     var isBlack: Bool = false {
         didSet {
             if isBlack {
@@ -22,7 +23,8 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        buttonTapped(button2)
+        buttonTap(button2)
+
 
     }
     
@@ -32,22 +34,27 @@ class ViewController: UIViewController {
         var password: String = ""
 
         let queue = DispatchQueue.global(qos: .default)
-        queue.async { [self] in
+        queue.async { 
             while password != passwordToUnlock {
                 password = generateBruteForce(password, fromArray: ALLOWED_CHARACTERS)
                 print(password)
-                label.text = password
+                DispatchQueue.main.async {
+                    self.label.text = password
+                }
             }
+
         }
-        print(password)
+//        print(password)
+//        label.text = password
     }
-    
-    @IBAction func buttonTapped(_ sender: UIButton) {
-        let text: String = ""
-        textField.text = text
+
+    @IBAction func buttonTap(_ sender: UIButton) {
+        var text: String = ""
+        text = textField.text ?? ""
         textField.isSecureTextEntry = true
         self.bruteForce(passwordToUnlock: text)
     }
+
 }
 
 extension String {
